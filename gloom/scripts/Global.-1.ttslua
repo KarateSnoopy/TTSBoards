@@ -239,7 +239,7 @@ function moveRoundTracker()
   }
 
   for _, t in pairs(tabInfo) do
-    if t.title == "Rules" then tab = t.body end
+    if t.title == "Round Tracker" then tab = t.body end
   end
   if tab == "" then return end
 
