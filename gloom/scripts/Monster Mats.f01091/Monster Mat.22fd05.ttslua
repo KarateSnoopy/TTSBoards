@@ -1,0 +1,117 @@
+function onLoad(save_state)
+  buttons = {
+    click_function = "placeSleeve",
+    function_owner = self,
+    label          = "",
+    position       = {-0.61, 0.1, 0.8},
+    width          = 400,
+    height         = 100,
+    color          = {0,0,0,0}
+  }
+  self.createButton(buttons)
+
+  buttons.click_function = "drawCardClicked"
+  buttons.position = {0.535, 0.1, 0.8}
+  buttons.width = 250
+  self.createButton(buttons)
+
+  buttons.click_function = "reshuffle"
+  buttons.position = {1.135, 0.1, 0.8}
+  buttons.width = 300
+  self.createButton(buttons)
+end
+
+function placeSleeve()
+  getObjectFromGUID("b26c16").takeObject({
+    position       = self.positionToWorld({0.61, 0.5, -0.1484}),
+    rotation       = {0, 0, 0}
+  })
+end
+
+function drawCardClicked()
+  desc, name = drawCard()
+  if desc ~= nil then
+    local tableInilist = Global.getTable("tableInilist")
+    table.insert(tableInilist, {tonumber(desc:sub(1, 2)), 999, name, false})
+    table.sort(tableInilist, function(a, b) if a[1] == b[1] then return a[2] < b[2] else return a[1] < b[1] end end)
+    Global.setTable("tableInilist", tableInilist)
+    Global.call("clearIniList")
+    Timer.create({
+      identifier     = self.getGUID() .. "createIni",
+      function_name  = "createIniList",
+      function_owner = Global,
+      delay          = 0.5
+    })
+    -- Global.call("createIniList")
+  end
+end
+
+function drawCard()
+  local hitlist = Physics.cast({
+    origin       = self.positionToWorld({-0.855, 0, -0.551}),
+    direction    = {0,1,0},
+    type         = 2,
+    size         = {1,1,1},
+    max_distance = 0,
+    debug        = false
+  }) -- returns {{Vector point, Vector normal, float distance, Object hit_object}, ...}
+
+  for i, j in pairs(hitlist) do
+    if j.hit_object.tag == "Deck" then
+      local card = j.hit_object.takeObject({
+        position       = self.positionToWorld({-0.855, 1, 0.2595}),
+        flip           = true
+      })
+      return card.getDescription(), card.getName()
+    end
+  end
+end
+
+function reshuffle()
+  local hitlist = Physics.cast({
+    origin       = self.positionToWorld({-0.855, 0, 0.2595}),
+    direction    = {0,1,0},
+    type         = 2,
+    size         = {1,1,1},
+    max_distance = 0,
+    debug        = false
+  }) -- returns {{Vector point, Vector normal, float distance, Object hit_object}, ...}
+
+  for i, j in pairs(hitlist) do
+    if j.hit_object.tag == "Deck" or j.hit_object.tag == "Card" then
+      deck = Physics.cast({
+        origin       = self.positionToWorld({-0.855, 0, -0.551}),
+        direction    = {0,1,0},
+        type         = 2,
+        size         = {1,1,1},
+        max_distance = 0,
+        debug        = false
+      }) -- returns {{Vector point, Vector normal, float distance, Object hit_object}, ...}
+
+      for u, v in pairs(deck) do
+        if v.hit_object.tag == "Deck" then
+          v.hit_object.putObject(j.hit_object)
+          v.hit_object.shuffle()
+        end
+      end
+      return
+    end
+  end
+end
+
+function getDiscard()
+  local hitlist = Physics.cast({
+    origin       = self.positionToWorld({-0.855, 0, 0.2595}),
+    direction    = {0,1,0},
+    type         = 2,
+    size         = {1,1,1},
+    max_distance = 0,
+    debug        = false
+  }) -- returns {{Vector point, Vector normal, float distance, Object hit_object}, ...}
+
+  for i, j in pairs(hitlist) do
+    if j.hit_object.tag == "Deck" or j.hit_object.tag == "Card" then
+      return j.hit_object
+    end
+  end
+end

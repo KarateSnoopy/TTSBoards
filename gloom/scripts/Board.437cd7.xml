@@ -1,0 +1,3 @@
+<Button id="DeleteButton" active="false" width="2300" height="800" position="0 -175 -1074"></Button>
+<Button id="DeleteMonsters1" active="false" width="725" height="350" position="830 420 -1074"></Button>
+<Button id="DeleteMonsters2" active="false" width="725" height="350" position="-830 420 -1074"></Button>

@@ -1,0 +1,39 @@
+function onLoad(save_state)
+  self.createButton({
+    click_function = "addPlayer",
+    function_owner = self,
+    label          = "",
+    position       = {0,0.05,0},
+    color          = {0, 0, 0, 0},
+    width          = 2400,
+    height         = 600
+  })
+end
+
+function addPlayer()
+    local makeBoard = true
+    local pos = self.getPosition()
+    local hitlist = Physics.cast({
+        origin       = self.positionToWorld({0.0, 0, -10.75}),
+        direction    = {0,1,0},
+        type         = 2,
+        size         = {1,1,1},
+        max_distance = 0,
+        debug        = false
+    }) -- returns {{Vector point, Vector normal, float distance, Object hit_object}, ...}
+    
+    for k,v in pairs(hitlist) do
+
+        if v.hit_object.getName() == "Play Area" then
+            makeBoard = false
+        end
+    end
+    
+    if makeBoard == true then
+        getObjectFromGUID("457c84").takeObject({
+            position       =  {0.00, 1.73, -16.67},
+            rotation       = {0.00, 180.00, 0.00},
+            smooth         = false
+        }).lock()    
+    end
+end

@@ -1,0 +1,430 @@
+<!-- Xml UI. See documentation: https://api.tabletopsimulator.com/ui/introUI/ -->
+<Defaults>
+  <Button color="#828282"/>
+  <Button class="ini" color="rgba(0, 0, 0, 0.95)" textColor="rgb(1, 1, 1)" fontSize="16"/>
+  <Panel class="RulesBook" width="756" height="1008" color="#141414"  active="false" showAnimation="Grow" hideAnimation="Shrink" returnToOriginalPositionWhenReleased="false" allowDragging="true" outline="#141414" outlineSize="5 5"/>
+  <Button class="topButtons" width="35" height="35" rectAlignment="UpperLeft" offsetXY="0 0"/>
+  <Text class="UIText" fontSize="20" fontStyle="Bold" color="#828282"/>
+  <InputField class="UIInputField" width="50" height="33" fontSize="17" fontStyle="Bold" colors="#828282|#FFFFFF|#C8C8C8|rgba(0.78,0.78,0.78,0.5)"/>
+  <Button class="bottomButtons" width="35" height="35" rectAlignment="LowerLeft" showAnimation="Grow" hideAnimation="Shrink"/>
+  <HorizontalScrollView  scrollbarBackgroundColor="#141414" scrollbarColors="#828282|#FFFFFF|#828282" color="rgba(0, 0, 0, 0.95)"/>
+  <Button class="controlButtons" height="80" width="45" color="#141414"/>
+  <Image preserveAspect="true"/>
+</Defaults>
+
+<VerticalLayout padding="0 0 0 20" rectAlignment="UpperRight" offsetXY="-250 0" height="90" width="164">
+  <Button onClick="showBI">
+    <Image image="BI Drawer"></Image>
+  </Button>
+  <Button id="showSpawner" onClick="spawnerClicked">
+    <Image image="Game Setup"></Image>
+  </Button>
+</VerticalLayout>
+
+<Button height="35" width="230" rectAlignment="UpperLeft" offsetXY="100 0" fontStyle="Bold" fontSize="18" onClick="showIni">
+  <Image image="Initiative Drawer"></Image>
+</Button>
+
+<Panel id="RulesPanel" class="RulesBook">
+  <Image image="Rule Book" rectAlignment="UpperCenter" height="30" offsetXY="0 -5"></Image>
+  <Button id="zoomInButton" class="topButtons" onClick="75ab50/RulesClicked">
+    <Image image="ZoomIn"></Image>
+  </Button>
+  <Button id="zoomOutButton" class="topButtons" offsetXY="40 0" onClick="75ab50/RulesClicked">
+    <Image image="ZoomOut"></Image>
+  </Button>
+  <InputField
+    id="InputZoomMultiplier"
+    class="UIInputField"
+    characterValidation="Decimal"
+    tooltip="Percentage by which zooming and resizing happens. Must be above 100."
+    tooltipPosition="Above"
+    rectAlignment="UpperLeft"
+    textAlignment="MiddleCenter"
+    text="120"
+    offsetXY="80 -1"
+    onEndEdit="75ab50/onEndEditZoomPercentage"></InputField>
+    <Image rectAlignment="UpperLeft" width="20" height="20" offsetXY="135 -7" image="Percentage"></Image>
+  <Button id="closeButton" class="topButtons" rectAlignment="UpperRight" onClick="75ab50/RulesClicked">
+    <Image image="X Sign"></Image>
+  </Button>
+
+  <HorizontalScrollView id="imageScroll" width="756" height="928" scrollSensitivity="30" vertical="true" verticalScrollbarVisibility="AutoHide" raycastTarget="false">
+    <Image id="RulesImage" rectAlignment="MiddleCenter" image="Rulebook Page 1" raycastTarget="false" width="756" height="920"></Image>
+  </HorizontalScrollView>
+  <Button id="previousPage" class="controlButtons" onClick="75ab50/RulesClicked" rectAlignment="MiddleLeft" active="false">
+    <Image image="ArrowLeft"></Image>
+  </Button>
+  <Button id="nextPage" class="controlButtons" onClick="75ab50/RulesClicked" rectAlignment="MiddleRight">
+    <Image image="ArrowRight"></Image>
+  </Button>
+
+  <Button id="widenButton" class="bottomButtons" onClick="75ab50/RulesClicked">
+    <Image image="Widen"></Image>
+  </Button>
+
+  <InputField id="CurrentPageCount" class="UIInputField" characterValidation="Integer" text="1" rectAlignment="LowerCenter" textAlignment="LowerRight" offsetXY="-33 1" onEndEdit="75ab50/onEndEditCurrentPage"></InputField>
+  <Text id="MaxPageCount" class="UIText" text="/ 54" alignment="LowerCenter" offsetXY="12 6"></Text>
+  <Button id="index" class="bottomButtons" rectAlignment="LowerCenter" onClick="75ab50/RulesClicked" offsetXY="80 0" width="70">
+    <Image image="Index" preserveAspect="false"></Image>
+  </Button>
+  <Button id="narrowButton" class="bottomButtons" rectAlignment="LowerRight" onClick="75ab50/RulesClicked">
+    <Image image="Narrow"></Image>
+  </Button>
+</Panel>
+
+<Panel id="ScenarioPanel" class="RulesBook">
+  <Image image="Scenario Book" rectAlignment="UpperCenter" height="30" offsetXY="0 -5"></Image>
+  <Button id="zoomInButtonS" class="topButtons" onClick="75ab50/RulesClicked">
+    <Image image="ZoomIn"></Image>
+  </Button>
+  <Button id="zoomOutButtonS" class="topButtons" offsetXY="40 0" onClick="75ab50/RulesClicked">
+    <Image image="ZoomOut"></Image>
+  </Button>
+  <InputField
+    id="InputZoomMultiplierS"
+    class="UIInputField"
+    characterValidation="Decimal"
+    tooltip="Percentage by which zooming and resizing happens. Must be above 100."
+    tooltipPosition="Above"
+    rectAlignment="UpperLeft"
+    textAlignment="MiddleCenter"
+    text="120"
+    offsetXY="80 -1"
+    onEndEdit="75ab50/onEndEditZoomPercentage"></InputField>
+    <Image rectAlignment="UpperLeft" width="20" height="20" offsetXY="135 -7" image="Percentage"></Image>
+  <Button id="closeButtonS" class="topButtons" rectAlignment="UpperRight" onClick="75ab50/RulesClicked">
+    <Image image="X Sign"></Image>
+  </Button>
+
+  <HorizontalScrollView id="imageScrollS" width="756" height="928" scrollSensitivity="30" vertical="true" verticalScrollbarVisibility="AutoHide" raycastTarget="false">
+    <Image id="ScenarioImage" rectAlignment="MiddleCenter" image="Scenario Page 1" raycastTarget="false" width="756" height="920"></Image>
+  </HorizontalScrollView>
+  <Button id="previousPageS" class="controlButtons" onClick="75ab50/RulesClicked" rectAlignment="MiddleLeft" active="false">
+    <Image image="ArrowLeft"></Image>
+  </Button>
+  <Button id="nextPageS" class="controlButtons" onClick="75ab50/RulesClicked" rectAlignment="MiddleRight">
+    <Image image="ArrowRight"></Image>
+  </Button>
+
+  <Button id="widenButtonS" class="bottomButtons" onClick="75ab50/RulesClicked">
+    <Image image="Widen"></Image>
+  </Button>
+
+  <InputField id="CurrentPageCountS" class="UIInputField" characterValidation="Integer" text="1" rectAlignment="LowerCenter" textAlignment="LowerRight" offsetXY="-33 1" onEndEdit="75ab50/onEndEditCurrentPage"></InputField>
+  <Text id="MaxPageCountS" class="UIText" text="/ 122" alignment="LowerCenter" offsetXY="18 6"></Text>
+
+  <Button id="narrowButtonS" class="bottomButtons" rectAlignment="LowerRight" onClick="75ab50/RulesClicked">
+    <Image image="Narrow"></Image>
+  </Button>
+</Panel>
+
+<Panel
+  id="BattleInterface"
+  height="280"
+  width="270"
+  rectAlignment="MiddleRight"
+  offsetXY="0 0"
+  active="false"
+  color="rgba(0,0,0,0.95)"
+  showAnimation="SlideIn_Right"
+  hideAnimation="None"
+  animationDuration="1"
+  allowDragging="true"
+  returnToOriginalPositionWhenReleased="false">
+  <VerticalLayout padding="10 10 0 40" spacing="10">
+    <Image image="BI Text" ignoreLayout="true" width="170" offsetXY="0 105"></Image>
+    <Text></Text>
+    <HorizontalLayout spacing="5">
+      <Button onClick="reveal">
+        <Image image="Start Round"></Image>
+      </Button>
+      <Button onClick="endRound">
+        <Image image="End Round"></Image>
+      </Button>
+    </HorizontalLayout>
+    <Button onClick="drawClicked">
+      <Image image="Draw Modifier"></Image>
+    </Button>
+    <HorizontalLayout spacing="5">
+      <Button onClick="sortHand">
+        <Image image="Sort Hand"></Image>
+      </Button>
+      <Button onClick="longRest">
+        <Image image="Long Rest"></Image>
+      </Button>
+    </HorizontalLayout>
+  </VerticalLayout>
+  <TableLayout offsetXY="0 -120" height="20" width="240" columnWidths="20 100" cellBackgroundColor="clear">
+    <Row>
+      <Cell>
+        <Button onClick="showSolo" id="soloToggle"></Button>
+      </Cell>
+      <Cell>
+        <Image image="Solo Mode"></Image>
+      </Cell>
+    </Row>
+  </TableLayout>
+</Panel>
+
+<Panel
+  id="SoloInterface"
+  height="550"
+  width="270"
+  rectAlignment="MiddleRight"
+  active="false"
+  color="rgba(0,0,0,0.95)"
+  showAnimation="SlideIn_Right"
+  hideAnimation="None"
+  animationDuration="1"
+  allowDragging="true"
+  returnToOriginalPositionWhenReleased="false">
+  <VerticalLayout padding="10 10 0 40" spacing="10" childForceExpandHeight="false">
+    <Image id="BIImage" image="BI Text" ignoreLayout="true" width="200" offsetXY="0 247"></Image>
+    <Text minheight="50"></Text>
+    <HorizontalLayout spacing="5" minheight="35" maxheight="35">
+      <Button onClick="reveal">
+        <Image image="Start Round"></Image>
+      </Button>
+      <Button onClick="endRound">
+        <Image image="End Round"></Image>
+      </Button>
+    </HorizontalLayout>
+    <VerticalLayout padding="0 0 10 0" id="P1" active="true">
+      <Button minheight="35" maxheight="35" onClick="drawClicked" id="Red">
+        <Image image="P1"></Image>
+      </Button>
+      <HorizontalLayout spacing="5" minheight="35" maxheight="35">
+        <Button onClick="sortHand" id="Red">
+          <Image image="Sort Hand"></Image>
+        </Button>
+        <Button onClick="longRest" id="Red">
+          <Image image="Long Rest"></Image>
+        </Button>
+      </HorizontalLayout>
+    </VerticalLayout>
+    <VerticalLayout padding="0 0 10 0" id="P2" active="true">
+      <Button minheight="35" maxheight="35" onClick="drawClicked" id="White">
+        <Image image="P2"></Image>
+      </Button>
+      <HorizontalLayout spacing="5" minheight="35" maxheight="35">
+        <Button onClick="sortHand" id="White">
+          <Image image="Sort Hand"></Image>
+        </Button>
+        <Button onClick="longRest" id="White">
+          <Image image="Long Rest"></Image>
+        </Button>
+      </HorizontalLayout>
+    </VerticalLayout>
+    <VerticalLayout padding="0 0 10 0" id="P3" active="true">
+      <Button minheight="35" maxheight="35" onClick="drawClicked" id="Blue">
+        <Image image="P3"></Image>
+      </Button>
+      <HorizontalLayout spacing="5" minheight="35" maxheight="35">
+        <Button onClick="sortHand" id="Blue">
+          <Image image="Sort Hand"></Image>
+        </Button>
+        <Button onClick="longRest" id="Blue">
+          <Image image="Long Rest"></Image>
+        </Button>
+      </HorizontalLayout>
+    </VerticalLayout>
+    <VerticalLayout padding="0 0 10 0" id="P4" active="true">
+      <Button minheight="35" maxheight="35" onClick="drawClicked" id="Green">
+        <Image image="P4"></Image>
+      </Button>
+      <HorizontalLayout spacing="5" minheight="35" maxheight="35">
+        <Button onClick="sortHand" id="Green">
+          <Image image="Sort Hand"></Image>
+        </Button>
+        <Button onClick="longRest" id="Green">
+          <Image image="Long Rest"></Image>
+        </Button>
+      </HorizontalLayout>
+    </VerticalLayout>
+  </VerticalLayout>
+  <TableLayout id="tableSolo" offsetXY="0 -253" height="20" width="240" columnWidths="20 100 20 130" cellBackgroundColor="clear">
+    <Row>
+      <Cell>
+        <Button onClick="showSolo" id="soloToggle">
+          <Image image="Checkmark"></Image>
+        </Button>
+      </Cell>
+      <Cell>
+        <Image image="Solo Mode"></Image>
+      </Cell>
+    </Row>
+  </TableLayout>
+</Panel>
+
+<Panel
+  id="iniList"
+  height="0"
+  width="230"
+  active="true"
+  rectAlignment="UpperLeft"
+  offsetXY="100 -40"
+  color="#FFFFFF00"
+  showAnimation="SlideIn_Top"
+  hideAnimation="SlideOut_Top"
+  animationDuration="1"
+  allowDragging="true"
+  returnToOriginalPositionWhenReleased="false">
+  <VerticalLayout padding="5 5 5 5" spacing="5"></VerticalLayout>
+</Panel>
+
+<Panel id="Spawner" height="600" width="550" color="#000000F0" allowDragging="true" returnToOriginalPositionWhenReleased="false" showAnimation="FadeIn" hideAnimation="FadeOut" animationDuration="1" active="false">
+  <Panel id="ScenarioSpawner" height="600" width="550" color="#00000000" rectAlignment="LowerCenter" active="true">
+    <HorizontalLayout spacing="10" offsetXY="0 -25" width="500" height="50" rectAlignment="UpperCenter">
+      <Button id="ScenarioMS" onClick="spawnerClicked" color="#828282">
+        <Image image="Scenario Setup Selected" preserveAspect="false"></Image>
+      </Button>
+      <Button id="SingleMS" onClick="spawnerClicked" color="#141414">
+        <Image image="Monster Setup" preserveAspect="false"></Image>
+      </Button>
+    </HorizontalLayout>
+    <Image position="0 150 0" height="25" image="Scenario Number"></Image>
+    <Slider id="SSSlider" position="0 105 0" width="450" minValue="1" maxValue="95" value="1" wholeNumbers="true" onValueChanged="updateSliderValue"/>
+    <Text id="SSScenario" position="0 50 0" fontStyle="Bold" fontSize="36" text="1" color="#828282"></Text>
+    <Button id="threeD" active="false" isOn="false" onClick="toggleChange"  width="25" height="25" offsetXY="-75 -30">
+      <Image id="threeDImage" image="Checkmark"></Image>
+    </Button>
+    <Image image="3D Overlay" active="false" width="90" offsetXY="0 -32"></Image>
+    <Button id="HiddenRooms1" width="25" height="25" offsetXY="-190 -80" color="#00000000" onClick="toggleChange(2)">
+      <Image id="HiddenRooms1Image" image="Radio Button Selected"></Image>
+    </Button>
+    <Image width="120" image="Hidden Rooms" offsetXY="-100 -80"></Image>
+    <Button id="HiddenRooms2" width="25" height="25" offsetXY="40 -80" color="#00000000" onClick="toggleChange(1)">
+      <Image id="HiddenRooms2Image" image="Radio Button"></Image>
+    </Button>
+    <Image width="130" image="Revealed Rooms" offsetXY="130 -80"></Image>
+    <HorizontalLayout height="35" offsetXY="0 -130" width="150">
+      <Dropdown id="typeDropdownScenario" itemHeight="25" fontSize="16" value="Standee" onValueChanged="updateSliderValue"  color="#828282" itemBackgroundColors="#828282|#C4C4C4" dropdownBackgroundColor="#828282" fontStyle="Bold" textColor="#000000">
+        <Option selected="true">Standee</Option>
+        <Option>Hex</Option>
+      </Dropdown>
+    </HorizontalLayout>
+    <HorizontalLayout offsetXY="0 -200" height="50" width="450" spacing="10">
+      <Button id="createMap" onClick="spawnerClicked" textColor="#000000" fontStyle="Bold">
+        <Image image="Create Map" preserveAspect="false"></Image>
+      </Button>
+      <Button onClick="437cd7/checkArea">
+        <Image image="Delete Map" preserveAspect="false"></Image>
+      </Button>
+    </HorizontalLayout>
+  </Panel>
+  <Panel id="MonsterSpawner" height="600" width="550" color="#00000000" rectAlignment="LowerCenter" active="false">
+    <HorizontalLayout spacing="10" offsetXY="0 -25" width="500" height="50" rectAlignment="UpperCenter">
+      <Button id="ScenarioMS" onClick="spawnerClicked" color="#141414">
+        <Image image="Scenario Setup" preserveAspect="false"></Image>
+      </Button>
+      <Button id="SingleMS" onClick="spawnerClicked" color="#828282">
+        <Image image="Monster Setup Selected" preserveAspect="false"></Image>
+      </Button>
+    </HorizontalLayout>
+    <Image position="0 150 0" height="25" image="Scenario Level"></Image>
+    <Slider id="MSSlider" position="0 105 0" minValue="0" maxValue="7" value="1" wholeNumbers="true" onValueChanged="updateSliderValue"/>
+    <Text id="MSSLevel" position="0 50 0" fontStyle="Bold" fontSize="36" text="1" color="#828282"></Text>
+    <HorizontalLayout height="35" offsetXY="0 -30" width="250">
+      <Dropdown id="monsterDropdown" itemHeight="25" fontSize="16" value="Ancient Artillery" onValueChanged="updateSliderValue" color="#828282" itemBackgroundColors="#828282|#C4C4C4" dropdownBackgroundColor="#828282" fontStyle="Bold" textColor="#000000">
+        <Option>------------Monster-----------</Option>
+        <Option selected="true">Ancient Artillery</Option>
+        <Option>Bandit Archer</Option>
+        <Option>Bandit Guard</Option>
+        <Option>Black Imp</Option>
+        <Option>Cave Bear</Option>
+        <Option>City Archer</Option>
+        <Option>City Guard</Option>
+        <Option>Cultist</Option>
+        <Option>Deep Terror</Option>
+        <Option>Earth Demon</Option>
+        <Option>Flame Demon</Option>
+        <Option>Forest Imp</Option>
+        <Option>Frost Demon</Option>
+        <Option>Giant Viper</Option>
+        <Option>Harrower Infester</Option>
+        <Option>Hound</Option>
+        <Option>Inox Archer</Option>
+        <Option>Inox Guard</Option>
+        <Option>Inox Shaman</Option>
+        <Option>Living Bones</Option>
+        <Option>Living Corpse</Option>
+        <Option>Living Spirit</Option>
+        <Option>Lurker</Option>
+        <Option>Night Demon</Option>
+        <Option>Ooze</Option>
+        <Option>Rending Drake</Option>
+        <Option>Savvas Icestorm</Option>
+        <Option>Savvas Lavaflow</Option>
+        <Option>Spitting Drake</Option>
+        <Option>Stone Golem</Option>
+        <Option>Sun Demon</Option>
+        <Option>Vermling Scout</Option>
+        <Option>Vermling Shaman</Option>
+        <Option>Wind Demon</Option>
+        <Option>-------------Boss-------------</Option>
+        <Option>Bandit Commander</Option>
+        <Option>Captain of the Guard</Option>
+        <Option>Dark Rider</Option>
+        <Option>Elder Drake</Option>
+        <Option>Inox Bodyguard</Option>
+        <Option>Jekserah</Option>
+        <Option>Merciless Overseer</Option>
+        <Option>Prime Demon</Option>
+        <Option>The Betrayer</Option>
+        <Option>The Colorless</Option>
+        <Option>The Gloom</Option>
+        <Option>The Sightless Eye</Option>
+        <Option>Winged Horror</Option>
+      </Dropdown>
+    </HorizontalLayout>
+    <HorizontalLayout height="35" offsetXY="-50 -80" width="150">
+      <Dropdown id="typeDropdown" itemHeight="25" fontSize="16" value="Standee" onValueChanged="updateSliderValue"  color="#828282" itemBackgroundColors="#828282|#C4C4C4" dropdownBackgroundColor="#828282" fontStyle="Bold" textColor="#000000">
+        <Option selected="true">Standee</Option>
+        <Option>Horizontal</Option>
+        <Option>Vertical</Option>
+      </Dropdown>
+    </HorizontalLayout>
+    <Button id="isElite" isOn="false" onClick="toggleChange" width="25" height="25" offsetXY="65 -80">
+      <Image id="isEliteImage" active="false" image="Checkmark"></Image>
+    </Button>
+    <Image image="Elite" width="35" offsetXY="105 -80" preserveAspect="true"></Image>
+    <HorizontalLayout offsetXY="0 -200" height="50" width="450" spacing="10">
+      <Button id="spawnMonster_Button" onClick="spawnerClicked" textColor="#000000" fontStyle="Bold">
+        <Image image="Spawn Monster" preserveAspect="false"></Image>
+      </Button>
+      <Button onClick="437cd7/checkMonster">
+        <Image image="Delete Monsters" preserveAspect="false"></Image>
+      </Button>
+    </HorizontalLayout>
+  </Panel>
+</Panel>
+
+
+<Panel id="clearAreaYN" width="800" height="100" color="#141414" active="false" allowDragging="true" returnToOriginalPositionWhenReleased="false" outline="#141414" outlineSize="30 30">
+  <VerticalLayout spacing="20">
+    <Image image="Want Delete"></Image>
+    <HorizontalLayout minheight="40" spacing="15" padding="100 100 0 0">
+      <Button onClick="437cd7/cleanArea">
+        <Image image="Yes"></Image>
+      </Button>
+      <Button onClick="437cd7/NoClicked">
+        <Image image="No"></Image>
+      </Button>
+    </HorizontalLayout>
+  </VerticalLayout>
+</Panel>
+
+<Panel id="clearAreaYNMonster" width="800" height="100" color="#141414" active="false" allowDragging="true" returnToOriginalPositionWhenReleased="false" outline="#141414" outlineSize="30 30">
+  <VerticalLayout spacing="20">
+    <Image image="Want Delete"></Image>
+    <HorizontalLayout minheight="40" spacing="15" padding="100 100 0 0">
+      <Button onClick="437cd7/cleanMonster">
+        <Image image="Yes"></Image>
+      </Button>
+      <Button onClick="437cd7/NoClickedMonster">
+        <Image image="No"></Image>
+      </Button>
+    </HorizontalLayout>
+  </VerticalLayout>
+</Panel>

@@ -1,0 +1,1 @@
+..\TTSLuaExtractor\source\bin\Debug\TTSLuaExtractor.exe embed latest f:\git\gloom\scripts f:\git\gloom\scripts

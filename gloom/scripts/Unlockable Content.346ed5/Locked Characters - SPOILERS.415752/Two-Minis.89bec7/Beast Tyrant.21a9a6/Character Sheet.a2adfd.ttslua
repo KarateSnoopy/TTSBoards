@@ -1,0 +1,280 @@
+toggleSymbol = "\u{2717}"
+hideButtonBack = true
+
+thick = 0.05
+
+function initCustomButtons()
+	thick = 0.05
+
+	-- dx = -0.27; dz = -0.713
+	dx = -0.54; dz = -1.49
+	createTextField('Name', 'txt', dx, dz)
+
+	dz = -0.68
+	setupButton('xp', 'counter', dx, dz)
+
+	dz = -0.1
+	setupButton('gold', 'counter', dx, dz)
+
+	dx = -0.66; dz = 1.08
+	createTextField('Empty', 'editBox', dx, dz);
+
+	dx = -1.03 ; dz = -1.33; px = 0.135
+	setupButton('level1', "toggleA", dx, dz); dx = dx + px
+	setupButton('level2', "toggleA", dx, dz); dx = dx + px
+	setupButton('level3', "toggleA", dx, dz); dx = dx + px
+	setupButton('level4', "toggleA", dx, dz); dx = dx + px
+	setupButton('level5', "toggleA", dx, dz); dx = dx + px
+	setupButton('level6', "toggleA", dx, dz); dx = dx + px
+	setupButton('level7', "toggleA", dx, dz); dx = dx + px
+	setupButton('level8', "toggleA", dx, dz); dx = dx + px
+	setupButton('level9', "toggleA", dx, dz)
+
+	dx = 0.34; dz = -1.655; px = 0.1; py = 0.16; py2 = 0.27
+	setupButton('perk1', "toggleB", dx + 0 * px, dz)
+	setupButton('perk2', "toggleB", dx + 0 * px, dz + py)
+	setupButton('perk3', "toggleB", dx + 1 * px, dz + py)
+	setupButton('perk4', "toggleB", dx + 2 * px, dz + py)
+	py = 0.43
+	setupButton('perk5', "toggleB", dx + 0 * px, dz + py)
+	setupButton('perk6', "toggleB", dx + 1 * px, dz + py)
+	-- py2 = 0.525
+	py = 0.685
+	setupButton('perk7', "toggleB", dx + 0 * px, dz + py)
+	setupButton('perk8', "toggleB", dx + 1 * px, dz + py)
+	py = 0.84
+	setupButton('perk9', "toggleB", dx + 0 * px, dz + py)
+	setupButton('perk10', "toggleB", dx + 1 * px, dz + py)
+	py = 1.1
+	setupButton('perk11', "toggleB", dx + 0 * px, dz + py)
+	setupButton('perk12', "toggleB", dx + 1 * px, dz + py)
+	setupButton('perk13', "toggleB", dx + 2 * px, dz + py)
+	py = 1.36
+	setupButton('perk14', "toggleB", dx + 0 * px, dz + py)
+	py = 1.51
+	setupButton('perk15', "toggleB", dx + 0 * px, dz + py)
+
+	dx = 0.44; dz = 0.277; px = 0.095; py = 0.123; px2 = 0.22
+	setupButton('notes1', "toggleB", dx + 0 * px + 0 * px2, dz + 0 * py)
+	setupButton('notes2', "toggleB", dx + 1 * px + 0 * px2, dz + 0 * py)
+	setupButton('notes3', "toggleB", dx + 2 * px + 0 * px2, dz + 0 * py)
+	setupButton('notes4', "toggleB", dx + 2 * px + 1 * px2, dz + 0 * py)
+	setupButton('notes5', "toggleB", dx + 3 * px + 1 * px2, dz + 0 * py)
+	setupButton('notes6', "toggleB", dx + 4 * px + 1 * px2, dz + 0 * py)
+	setupButton('notes7', "toggleB", dx + 4 * px + 2 * px2, dz + 0 * py)
+	setupButton('notes8', "toggleB", dx + 5 * px + 2 * px2, dz + 0 * py)
+	setupButton('notes9', "toggleB", dx + 6 * px + 2 * px2, dz + 0 * py)
+	setupButton('notes10', "toggleB", dx + 0 * px + 0 * px2, dz + 1 * py)
+	setupButton('notes11', "toggleB", dx + 1 * px + 0 * px2, dz + 1 * py)
+	setupButton('notes12', "toggleB", dx + 2 * px + 0 * px2, dz + 1 * py)
+	setupButton('notes13', "toggleB", dx + 2 * px + 1 * px2, dz + 1 * py)
+	setupButton('notes14', "toggleB", dx + 3 * px + 1 * px2, dz + 1 * py)
+	setupButton('notes15', "toggleB", dx + 4 * px + 1 * px2, dz + 1 * py)
+	setupButton('notes16', "toggleB", dx + 4 * px + 2 * px2, dz + 1 * py)
+	setupButton('notes17', "toggleB", dx + 5 * px + 2 * px2, dz + 1 * py)
+	setupButton('notes18', "toggleB", dx + 6 * px + 2 * px2, dz + 1 * py)
+
+end
+
+function initButtonsTable()
+	buttons = {}
+	inputs = {}
+	buttons.count = 0
+
+	buttons.counter = {
+		width = 0, height = 0, font = 800,
+		ox = 0.16, oz = -0.16, ow = 300, oh = 300
+	}
+	buttons.toggleA = {
+		width = 300, height = 300, font = 450
+	}
+	buttons.toggleB = {
+		width = 200, height = 200, font = 300
+	}
+	buttons.txt = {
+		width = 3200, height = 300, font = 250, alignment = 3
+	}
+	buttons.editBox = {
+		width = 3800, height = 3600, font = 250, alignment = 2
+	}
+
+end
+
+function forceSave()
+	local data_to_save = {buttons = {}, inputs = {}}
+	for i, v in pairs(buttons) do
+		if i ~= "count" then
+			if v.label == "\u{2717}" then
+				data_to_save.buttons[i] = "u{2717}"
+			else
+				data_to_save.buttons[i] = v.label
+			end
+		end
+	end
+	local inputs = self.getInputs()
+	for _, v in pairs(inputs) do
+		data_to_save.inputs[v.label] = v.value
+	end
+	saved_data = JSON.encode_pretty(data_to_save)
+	-- saved_data = ""
+	self.script_state = saved_data
+	return saved_data
+end
+
+function onload(saved_data)
+	initButtonsTable()
+	loaded_data = JSON.decode(saved_data)
+	if loaded_data ~= nil then
+		for i,v in pairs(loaded_data.buttons) do
+			buttons[i] = {label = v}
+		end
+		for i,v in pairs(loaded_data.inputs) do
+			inputs[i] = v
+		end
+	end
+	initCustomButtons()
+end
+
+
+function dud()
+end
+
+function clickedToggle(index)
+  if buttons[index].label == "" then
+    buttons[index].label = "\u{2717}"
+  else
+    buttons[index].label = ""
+  end
+  self.editButton(buttons[index])
+	forceSave()
+end
+
+function createTextField(name, type, x, z)
+	local input_parameters = {}
+	input_parameters.height = buttons[type].height
+	input_parameters.width = buttons[type].width
+	input_parameters.font_size = buttons[type].font
+	input_parameters.alignment = buttons[type].alignment
+
+	input_parameters.input_function = "editTextField"
+	input_parameters.function_owner = self
+	input_parameters.label = name
+	input_parameters.scale = {0.2, 0.2, 0.2}
+	input_parameters.position = {x, thick, z}
+	if hideButtonBack then
+		input_parameters.color = {1, 1, 1, 0}
+		input_parameters.font_color = {0, 0, 0, 100}
+	end
+
+	if inputs[name] ~= nil then
+		input_parameters.value = inputs[name]
+	end
+	self.createInput(input_parameters)
+end
+
+function editTextField(object, color, text, editing)
+	if not editing then
+		forceSave()
+	end
+end
+
+function setupButton(name, type, x, z)
+  local button_parameters = {}
+  button_parameters.index = buttons.count
+	button_parameters.height = buttons[type].height
+	button_parameters.width = buttons[type].width
+	button_parameters.font_size = buttons[type].font
+	if type == "counter" then
+    button_parameters.click_function = "dud"
+    button_parameters.label = "0"
+    createpm(name, type, x, z)
+    button_parameters.index = buttons.count
+	elseif type == "toggleA" or type == "toggleB" then
+		self.setVar("toggleClick_" .. name, function () clickedToggle(name) end)
+		button_parameters.click_function = "toggleClick_" .. name
+		button_parameters.label = ""
+  else
+    button_parameters.click_function = "dud"
+    button_parameters.label = "0"
+  end
+
+	if hideButtonBack then
+		button_parameters.color = {1, 1, 1, 0}
+		button_parameters.font_color = {0, 0, 0, 100}
+	end
+	button_parameters.scale = {0.2, 0.2, 0.2}
+  button_parameters.position = {x, thick, z}
+	button_parameters.function_owner = self
+
+	if buttons[name] ~= nil then
+		if buttons[name].label == "u{2717}" then
+			button_parameters.label = "\u{2717}"
+		else
+			button_parameters.label = buttons[name].label
+		end
+
+	end
+
+  self.createButton(button_parameters)
+  buttons[name] = button_parameters
+  buttons.count = buttons.count + 1
+end
+
+function createpm(name, type, x, z)
+  local button_parameters = {}
+  button_parameters.index = buttons.count
+	button_parameters.height = buttons[type].oh
+	button_parameters.width = buttons[type].ow
+	button_parameters.font_size = buttons[type].font * 0.7
+  self.setVar("add_" .. name, function () add(name, 1) end)
+  button_parameters.click_function = "add_" .. name
+  button_parameters.label = "+"
+  button_parameters.function_owner = self
+  button_parameters.scale = {0.2, 0.2, 0.2}
+	if hideButtonBack then
+		button_parameters.color = {1, 1, 1, 0}
+		button_parameters.font_color = {0, 0, 0, 100}
+	end
+  button_parameters.position = {x + buttons[type].ox, thick, z + buttons[type].oz}
+  self.createButton(button_parameters)
+  buttons["p_" .. name] = button_parameters
+  buttons.count = buttons.count + 1
+
+  button_parameters.index = buttons.count
+  self.setVar("sub_" .. name, function () add(name, - 1) end)
+  button_parameters.click_function = "sub_" .. name
+  button_parameters.label = "-"
+  button_parameters.position = {x - buttons[type].ox, thick, z + buttons[type].oz}
+  self.createButton(button_parameters)
+  buttons["m_" .. name] = button_parameters
+  buttons.count = buttons.count + 1
+end
+
+function add(name, amount)
+  buttons[name].label = tostring(tonumber(buttons[name].label) + amount)
+  self.editButton(buttons[name])
+	level = 0
+	if name == "xp" then
+		if tonumber(buttons[name].label) == 500 then
+			level = 9
+		elseif tonumber(buttons[name].label) == 420 then
+			level = 8
+		elseif tonumber(buttons[name].label) == 345 then
+			level = 7
+		elseif tonumber(buttons[name].label) == 275 then
+			level = 6
+		elseif tonumber(buttons[name].label) == 210 then
+			level = 5
+		elseif tonumber(buttons[name].label) == 150 then
+			level = 4
+		elseif tonumber(buttons[name].label) == 95 then
+			level = 3
+		elseif tonumber(buttons[name].label) == 45 then
+			level = 2
+		end
+		if level > 0 then
+			clickedToggle("level" .. level)
+		end
+	end
+	forceSave()
+end

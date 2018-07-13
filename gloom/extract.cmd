@@ -1,0 +1,1 @@
+..\TTSLuaExtractor\source\bin\Debug\TTSLuaExtractor.exe extract latest f:\git\gloom\scripts

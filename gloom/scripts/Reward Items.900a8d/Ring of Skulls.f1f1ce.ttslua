@@ -1,0 +1,18 @@
+function onLoad(save_state)
+  self.createButton({
+    click_function = "summon",
+    function_owner = self,
+    label          = "",
+    position       = {-0.8, 0.2, 0.7},
+    width          = 300,
+    height         = 800,
+    color          = {0,0,0,0}
+  })
+end
+
+function summon()
+  local token = getObjectFromGUID(Global.getTable("bags").summonToken).takeObject({})
+  token.setPosition({self.getPosition().x, self.getPosition().y+1, self.getPosition().z})
+  -- token.setColorTint({140/255, 0/255, 255/255})
+  token.setName("Skeleton")
+end

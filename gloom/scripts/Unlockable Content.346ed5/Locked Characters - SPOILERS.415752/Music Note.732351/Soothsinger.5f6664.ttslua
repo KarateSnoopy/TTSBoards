@@ -1,0 +1,5 @@
+function onCollisionEnter(info)
+  if info.collision_object.getName():find('Player Mat') then
+    getObjectFromGUID("75ab50").call("cleanArea", {info.collision_object, self})
+  end
+end

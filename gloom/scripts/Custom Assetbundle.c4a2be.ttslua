@@ -1,0 +1,7 @@
+function cycleEffect()
+  local actual = self.AssetBundle.getLoopingEffectIndex()
+  local table = self.AssetBundle.getLoopingEffects()
+  local new = actual + 1 < #table and actual + 1 or 0
+  self.AssetBundle.playLoopingEffect(new)
+  getObjectFromGUID("7a310a").AssetBundle.playLoopingEffect(new)
+end

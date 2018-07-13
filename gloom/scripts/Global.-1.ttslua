@@ -1,0 +1,673 @@
+setup = {
+  advancedAbilities = true,
+  advancedModifiers = true,
+  hidePMTooltip = true
+}
+
+tableInilist = {}
+
+function onLoad()
+  megaFreeze() -- Make objects non-interactive
+end
+
+function megaFreeze()
+  local megaFreezeIT = {'bafa19', 'f7805a', '8bf5e2', 'dff000', '42d2b6', 'a1ae9dd', '59d54d', 'cf0917',
+  '6c1b20', '75ab50', '2f9ec3', 'd68151', 'c44dd8', '9118a6', 'ef095e', '17f87d', '507d38', '9dc275', '75f651', '20210d', '8db51c', 'f3ffb7', 'b53fb2', '41393b', 'a75fcd',
+    'e19d3f'}
+
+  --megaFreeze ACTIVATE!
+  for i = 1, #megaFreezeIT, 1 do
+    obj = getObjectFromGUID(megaFreezeIT[i])
+    if obj ~= nil then
+      obj.interactable = false
+      obj.tooltip = false
+    end
+  end
+end
+startLoopUpdates = false
+objectGuids = {'d308e5', 'b81b9b', '826ec7', 'da3961'}
+
+function onObjectLoopingEffect(loopObject, index)
+  for i = 1, #objectGuids do
+    if loopObject.guid == objectGuids[i] then
+      if not startLoopUpdates then
+        startLoopUpdates = true
+        for j = 1, #objectGuids do
+          getObjectFromGUID(objectGuids[j]).AssetBundle.playLoopingEffect(index)
+        end
+        startLoopUpdates = false
+      end
+      break
+    end
+  end
+end
+
+function mark(player, value, id)
+  if UI.getAttribute(id, "color") == "rgba(0, 0, 0, 0.95)" then
+    UI.setAttribute(id, "color", "rgba(0.6, 0, 0, 0.95)")
+    tableInilist[tonumber(id:sub(9))][4] = true
+  else
+    UI.setAttribute(id, "color", "rgba(0, 0, 0, 0.95)")
+    tableInilist[tonumber(id:sub(9))][4] = false
+  end
+  UI.setAttribute(id, "textColor", "rgba(1, 1, 1, 1)")
+end
+
+function reveal()
+  local playArea = nil
+  local colors = {"Red", "White", "Blue", "Green"}
+  local hitlist = Physics.cast({
+    origin = {0.00, 1.73, - 16.67},
+    direction = {0, 1, 0},
+    type = 3,
+    size = {1, 1, 1},
+    max_distance = 0,
+    debug = false
+  })
+
+  for u, v in pairs(hitlist) do
+    if v.hit_object.getName() == "Play Area" then playArea = v.hit_object end
+  end
+
+  if playArea == nil then return end
+
+
+  for color, x in pairs(colorToPlayer) do
+    if color ~= "Black" then
+      local hitlist = Physics.cast({
+        origin = x.FC,
+        direction = {0, 1, 0},
+        type = 3,
+        size = size,
+        max_distance = 0,
+        debug = false
+      })
+      local card = nil
+      for _, obj in pairs(hitlist) do
+        if obj.hit_object.tag == "Card" then
+          card = obj.hit_object
+        end
+      end
+      if card == nil then
+        local class = getClassFromColor(color)
+        if class ~= "" and class ~= nil then
+          local found = false
+          for _, ini in pairs(tableInilist) do
+            if ini[3] == class then
+              found = true
+            end
+          end
+          if found == false then
+            local alive = true
+            for _, obj in pairs(getObjectFromGUID(colorToPlayer[color].zone).getObjects()) do
+              if obj.getName() == "You Died" then
+                alive = false
+              end
+            end
+            if alive then
+              broadcastToAll(class .. " has no Initiative!", {1, 0, 0})
+              return
+            end
+          end
+        end
+      end
+    end
+  end
+
+  broadcastToAll("New Round started. All Initiative Cards revealed.", {1, 1, 1})
+
+  local charList = {}
+
+  for i = 1, 4 do
+    local init, char = playArea.call("buttonClickedEx", {"P" .. i .. "FReveal"})
+    local tbInit = playArea.call("buttonClickedEx", {"P" .. i .. "SReveal"})
+    if init ~= nil then
+      table.insert(tableInilist, {tonumber(init), tonumber(tbInit), char})
+    end
+  end
+
+  for _, o in pairs(getAllObjects()) do
+    if o.getName() == "Monster Mat" then
+      local desc, name = o.call("drawCard")
+      if desc ~= nil then
+        table.insert(tableInilist, {tonumber(desc:sub(1, 2)), 999, name, false})
+      end
+    end
+  end
+
+  table.sort(tableInilist, function(a, b) if a[1] == b[1] then return a[2] < b[2] else return a[1] < b[1] end end)
+  createIniList()
+end
+
+function endRound()
+  local playArea
+  local hitlist = Physics.cast({
+    origin = {0.00, 1.73, - 16.67},
+    direction = {0, 1, 0},
+    type = 3,
+    size = {1, 1, 1},
+    max_distance = 0,
+    debug = false
+  })
+
+  for u, v in pairs(hitlist) do
+    if v.hit_object.getName() == "Play Area" then playArea = v.hit_object end
+  end
+
+	if playArea == nil then return end
+
+	broadcastToAll("Round ends.", {1, 1, 1})
+
+  playArea.call("checkAMDiscard")
+
+  for _, o in pairs(getAllObjects()) do
+    if o.getName() == "Monster Mat" then
+      local discard = o.call("getDiscard")
+      if discard then
+        if discard.tag == "Deck" then
+          for _, u in pairs(discard.getObjects()) do
+            if u.description:find("shuffle") then
+              o.call("reshuffle")
+            end
+          end
+        elseif discard then
+          if discard.getDescription():find("shuffle") then
+            o.call("reshuffle")
+          end
+        end
+      end
+    elseif o.getName():find("Player Mat") then
+      local hitlist = Physics.cast({
+        origin = o.positionToWorld({0.62, 0, - 0.8}),
+        direction = {0, 1, 0},
+        type = 2,
+        size = {1, 1, 1},
+        max_distance = 0,
+        debug = false
+      }) -- returns {{Vector point, Vector normal, float distance, Object hit_object}, ...}
+      local reshuffle = false
+
+      for i, j in pairs(hitlist) do
+        if j.hit_object.tag == "Deck" then
+          for _, u in pairs(j.hit_object.getObjects()) do
+            if u.nickname:find("Shuffle") then
+              reshuffle = true
+            end
+          end
+        elseif j.hit_object.tag == "Card" then
+
+          if j.hit_object.getName():find("Shuffle") then
+            reshuffle = true
+          end
+        end
+        if reshuffle then
+          local findDeck = Physics.cast({
+            origin = o.positionToWorld({0.62, 0, - 0.5}),
+            direction = {0, 1, 0},
+            type = 2,
+            size = {1, 1, 1},
+            max_distance = 0,
+            debug = false
+          }) -- returns {{Vector point, Vector normal, float distance, Object hit_object}, ...}
+          for x, y in pairs(findDeck) do
+            if y.hit_object.tag == "Deck" or j.hit_object.tag == "Card" then
+              y.hit_object.putObject(j.hit_object)
+              y.hit_object.shuffle()
+            end
+          end
+        end
+      end
+    end
+  end
+
+  local elements = {"Fire", "Ice", "Air", "Earth", "Light", "Dark"}
+  for _, j in pairs(elements) do
+    playArea.call("buttonClickedEx", {"low" .. j})
+  end
+
+  moveRoundTracker()
+
+  clearIniList()
+  tableInilist = {}
+end
+
+function moveRoundTracker()
+  local tabInfo = getNotebookTabs()
+  local tab = ""
+  local tracker = {
+    number = -0.6
+  }
+
+  for _, t in pairs(tabInfo) do
+    if t.title == "Rules" then tab = t.body end
+  end
+  if tab == "" then return end
+
+  if not (tab:match("move:(%a*)") == "yes") then return end
+  if tab:match("count:(%a*)") == "up" then
+    tracker.number = 0.6
+  elseif tab:match("count:(%a*)") ~= "down" then
+    return
+  end
+
+  local roundTracker = nil
+  local startPos = {x = -3.30, y = 1.92, z = -14.40}
+  for i = 0, 11 do
+    local hitlist = Physics.cast({
+      origin = {startPos.x + 0.6*i, startPos.y, startPos.z},
+      direction = {0, 1, 0},
+      type = 3,
+      size = {1, 1, 1},
+      max_distance = 0,
+      debug = false
+    })
+
+    for u, v in pairs(hitlist) do
+      if v.hit_object.getName() == "Round Tracker" then roundTracker = v.hit_object end
+    end
+  end
+  if roundTracker then
+    local oldPos = roundTracker.getPosition()
+    if oldPos.x < -3 and tracker.number == -0.6 then
+      broadcastToAll("Last Round Ended!", {1,0,0})
+      return
+    end
+    if not (oldPos.x > 3 and tracker.number == 0.6) then
+      roundTracker.setPosition({oldPos.x + tracker.number, oldPos.y, oldPos.z})
+      return
+    end
+    broadcastToAll("Round 12 Ended!", {1,0,0})
+  end
+
+end
+
+function drawClicked(player, value, id)
+  local origin, discard, color
+  if id == nil then
+    color = player.color
+  else
+    color = id
+  end
+
+  origin = colorToPlayer[color].AMDeck
+  discard = colorToPlayer[color].AMDiscard
+
+  local hitlist = Physics.cast({
+    origin = origin,
+    direction = {0, 1, 0},
+    type = 3,
+    size = {1, 1, 1},
+    max_distance = 0,
+    debug = false
+  })
+  for _, c in pairs(hitlist) do
+    if c.hit_object.tag == "Deck" then
+      local newCard = c.hit_object.takeObject({position = discard, flip = true})
+      if color == "Black" then
+        broadcastToAll("The Monsters drew: " .. newCard.getDescription(), {1, 1, 1})
+      elseif shown.soloMode == true then
+        broadcastToAll(getClassFromColor(color) .. " drew: " .. newCard.getName(), {1, 1, 1})
+      else
+        broadcastToAll(player.steam_name .. " (" .. getClassFromColor(color) .. ") drew: " .. newCard.getName(), {1, 1, 1})
+      end
+      return
+    end
+  end
+end
+
+function sortHand(player, value, id)
+  local handObjects
+  if id == nil then
+    handObjects = player.getHandObjects(1)
+  else
+    handObjects = Player[id].getHandObjects(1)
+  end
+
+  local cards = {}
+  local handPos = {}
+  for i, j in pairs(handObjects) do
+    table.insert(cards, {j, tonumber(j.getName():sub(-3, - 2))})
+    table.insert(handPos, j.getPosition())
+  end
+  table.sort(cards, function(a, b) return a[2] < b[2] end)
+  for i, j in ipairs(cards) do
+    j[1].setPosition(handPos[i])
+  end
+end
+
+function longRest(player, value, id)
+  local color
+  if id == nil then
+    color = player.color
+  else
+    color = id
+  end
+	local class = getClassFromColor(color)
+	broadcastToAll(class .. " take a Long Rest.", colorToPlayer[color].color)
+  table.insert(tableInilist, {99, 99, class})
+end
+
+function getClassFromColor(color)
+  local zone = colorToPlayer[color].zone
+
+  for i, j in pairs(getObjectFromGUID(zone).getObjects()) do
+    if j.getName() == "Character Mat" then
+      return j.getDescription()
+    end
+  end
+end
+
+function createIniList()
+  -- Global.UI.setAttribute("iniList", "height", 10 + #tableInilist * 35 + (#tableInilist - 1) * 5)
+
+  local xml = Global.UI.getXmlTable()
+  for i, j in pairs(xml) do
+    if j.attributes.id == "iniList" then
+      for k, v in ipairs(tableInilist) do
+        local tempTable = {
+          tag = "Button",
+          attributes = {
+            class = "ini",
+            textColor = "#FFFFFF",
+            onClick = "mark",
+            id = "iniEntry" .. k
+          },
+          value = v[1] .. " - " .. v[3]
+        }
+        table.insert(xml[i].children[1].children, tempTable)
+      end
+    end
+  end
+  Global.UI.setXmlTable(xml)
+
+  Wait.frames(function() Global.UI.setAttribute("iniList", "height", 10 + #tableInilist * 35 + (#tableInilist - 1) * 5) end, 5)
+  Wait.frames(remark, 10)
+end
+
+function remark()
+  for i, j in ipairs(tableInilist) do
+    if j[4] == true then
+      mark(nil, nil, "iniEntry" .. i)
+    end
+  end
+end
+
+function clearIniList()
+  Global.UI.setAttribute("iniList", "height", 0)
+  local xml = Global.UI.getXmlTable()
+  for i, j in pairs(xml) do
+    if j.attributes.id == "iniList" then
+      for k = 1, #xml[i].children[1].children do
+        table.remove(xml[i].children[1].children)
+      end
+    end
+  end
+  Global.UI.setXmlTable(xml)
+end
+
+function showBI()
+  if shown.battleInterface == false then
+    if shown.soloMode == false then
+      Global.UI.show("BattleInterface")
+    else
+      Global.UI.show("SoloInterface")
+    end
+    shown.battleInterface = true
+  else
+    Global.UI.hide("BattleInterface")
+    Global.UI.hide("SoloInterface")
+    shown.battleInterface = false
+  end
+end
+
+function showIni()
+  if shown.iniList == false then
+    Global.UI.show("iniList")
+    shown.iniList = true
+  else
+    Global.UI.hide("iniList")
+    shown.iniList = false
+  end
+end
+
+function showSolo()
+  local settings = {nil,
+  {height = "370", imageOffset = "0 155", tableOffset = "0 -165"},
+  {height = "460", imageOffset = "0 200", tableOffset = "0 -210"},
+  {height = "550", imageOffset = "0 247", tableOffset = "0 -253"},
+  }
+  local playerCount = 0
+  for color, i in pairs(colorToPlayer) do
+    if color ~= "Black" then
+      local playerMat = false
+      for _, j in pairs(getObjectFromGUID(i.zone).getObjects()) do
+        if j.getName():find("Player Mat") then
+          playerMat = true
+          playerCount = playerCount + 1
+        end
+      end
+      if playerMat then
+        Global.UI.setAttribute(i.pre, "active", "true")
+      else
+        Global.UI.setAttribute(i.pre, "active", "false")
+      end
+    end
+  end
+
+  if playerCount < 2 then
+    broadcastToAll("In solo mode you need at least 2 characters", {1,0,0})
+    return
+  end
+
+  Global.UI.setAttribute("SoloInterface", "height", settings[playerCount].height)
+  Global.UI.setAttribute("BIImage", "offsetXY", settings[playerCount].imageOffset)
+  Global.UI.setAttribute("tableSolo", "offsetXY", settings[playerCount].tableOffset)
+
+  if shown.soloMode == false then
+    Global.UI.show("SoloInterface")
+    Global.UI.hide("BattleInterface")
+    shown.soloMode = true
+  else
+    Global.UI.hide("SoloInterface")
+    Global.UI.show("BattleInterface")
+    shown.soloMode = false
+  end
+end
+
+function spawnerClicked(player, value, id)
+  if id == "ScenarioMS" then
+    self.UI.setAttribute("ScenarioSpawner", "active", "true")
+    self.UI.setAttribute("MonsterSpawner", "active", "false")
+  elseif id == "SingleMS" then
+    self.UI.setAttribute("MonsterSpawner", "active", "true")
+    self.UI.setAttribute("ScenarioSpawner", "active", "false")
+  elseif id == "showSpawner" then
+    showForPlayer({panel = "Spawner", color = player.color})
+  elseif id == "spawnMonster_Button" then
+    local partySheet
+    for _, obj in pairs(getAllObjects()) do
+      if obj.getDescription():find("Party Sheet") then
+        partySheet = obj
+      end
+    end
+    if partySheet then
+      local oldLevel = partySheet.UI.getAttribute("scenarioLevel", "text")
+      partySheet.UI.setAttribute("scenarioLevel", "text", self.UI.getAttribute("MSSLevel", "text"))
+      getObjectFromGUID("75ab50").call("spawnMonster", {monsterName = self.UI.getAttribute("monsterDropdown", "value"), monsterType = self.UI.getAttribute("typeDropdown", "value"), monsterDifficulty = isElite and "elite" or "normal"})
+      Timer.create({
+        identifier     = math.random(1,10000),
+        function_name  = "resetLevel",
+        function_owner = self,
+        parameters     = {partySheet, oldLevel},
+        delay          = 0.5
+      })
+    else
+      getObjectFromGUID("75ab50").call("spawnMonster", {monsterName = self.UI.getAttribute("monsterDropdown", "value"), monsterType = self.UI.getAttribute("typeDropdown", "value"), monsterDifficulty = isElite and "elite" or "normal"})
+    end
+  elseif id == "createMap" then
+    createMap({tonumber(self.UI.getAttribute("SSScenario", "text"))})
+    spawnerClicked(player, value, "showSpawner")
+  end
+end
+
+function resetLevel(params)
+  params[1].UI.setAttribute("scenarioLevel", "text", params[2])
+end
+
+function createMap(params)
+  local spawner = getObjectFromGUID("8d2074")
+  spawner.setVar("NumScenario", params[1])
+
+  local playerCount = 0
+  for color, i in pairs(colorToPlayer) do
+    if color ~= "Black" then
+      for _, j in pairs(getObjectFromGUID(i.zone).getObjects()) do
+        if j.getName():find("Player Mat") then
+          playerCount = playerCount + 1
+        end
+      end
+    end
+  end
+
+  if playerCount < 2 then playerCount = 2 end
+  if playerCount > 4 then playerCount = 4 end
+
+  spawner.setVar("NumCharacters", playerCount)
+  if self.UI.getAttribute("HiddenRooms1Image", "image") == "Radio Button Selected" then
+    spawner.setVar("TypeMap", 2)
+  else
+    spawner.setVar("TypeMap", 1)
+  end
+
+  if self.UI.getAttribute("typeDropdownScenario", "value") == "Standee" then
+    spawner.setVar("TypeMonster", 1)
+  else
+    spawner.setVar("TypeMonster", 2)
+  end
+  spawner.call("createMap")
+end
+
+function showForPlayer(params)
+  local panel = params.panel
+  local color = params.color
+  local opened = self.UI.getAttribute(panel, "visibility")
+  if opened == nil then opened = "" end
+  if opened:find(color) then
+    opened = opened:gsub("|" .. color, "")
+    opened = opened:gsub(color .. "|", "")
+    opened = opened:gsub(color, "")
+    self.UI.setAttribute(panel, "visibility", opened)
+    if opened == "" then
+      self.UI.setAttribute(panel, "active", "false")
+      shown.spawner = false
+    end
+  else
+    if shown.spawner == false then
+      self.UI.setAttribute(panel, "active", "true")
+      self.UI.setAttribute(panel, "visibility", color)
+      shown.spawner = true
+    else
+      self.UI.setAttribute(panel, "visibility", opened .. "|" .. color)
+    end
+  end
+end
+
+function updateSliderValue(player, value, id)
+  if id == "SSSlider" then
+    self.UI.setAttribute("SSScenario", "text", value)
+  elseif id == "MSSlider" then
+    self.UI.setAttribute("MSSlevel", "text", value)
+  else
+    self.UI.setAttribute(id, "value", value)
+  end
+end
+
+function toggleChange(player, value, id)
+  if id:find("HiddenRooms") then
+    Global.UI.setAttribute(id .. "Image", "image", "Radio Button Selected")
+    Global.UI.setAttribute("HiddenRooms" .. value .. "Image", "image", "Radio Button")
+  else
+    local isOn = Global.UI.getAttribute(id, "isOn")
+    if isOn == "true" then
+      self.setVar(id, false)
+      Global.UI.setAttribute(id, "isOn", "false")
+      Global.UI.hide(id .. "Image")
+    else
+      self.setVar(id, true)
+      Global.UI.setAttribute(id, "isOn", "true")
+      Global.UI.show(id .. "Image")
+    end
+  end
+end
+
+shown = {
+  battleInterface = false,
+  iniList = false,
+  soloMode = false,
+  spawner = false
+}
+
+isElite = false
+threeD = false
+
+boards = {
+  map = "9cc037"
+}
+
+colorToPlayer = {
+  Red = {zone = "49a4e0",
+		color = {0.856, 0.1, 0.094},
+    pre = "P1",
+    AMDiscard = { - 40.72, 2, - 33.96},
+    AMDeck = { - 40.72, 2, - 36.62},
+    FC = { - 16.60, 1.90, - 19.16},
+    SC = { - 13.40, 1.90, - 19.16}
+  },
+  White = {zone = "dac936",
+		color = {1, 1, 1},
+    pre = "P2",
+    AMDiscard = { - 16.73, 2, - 33.96},
+    AMDeck = { - 16.72, 2, - 36.62},
+    FC = { - 9.32, 1.90, - 19.16},
+    SC = { - 6.15, 1.90, - 19.16}
+  },
+  Blue = {zone = "62cd94",
+		color = {0.118, 0.53, 1},
+    pre = "P3",
+    AMDiscard = {7.28, 2, - 33.96},
+    AMDeck = {7.28, 2, - 36.62},
+    FC = {6.14, 1.90, - 19.16},
+    SC = {9.33, 1.90, - 19.16}
+  },
+  Green = {zone = "963318",
+		color = {0.192, 0.701, 0.168},
+    pre = "P4",
+    AMDiscard = {31.28, 2, - 33.96},
+    AMDeck = {31.28, 2, - 36.62},
+    FC = {13.41, 1.90, - 19.16},
+    SC = {16.58, 1.90, - 19.16}
+  },
+  Black = {
+    AMDiscard = {2.07, 2, -11.49},
+    AMDeck = {-2.05, 2, -11.51}
+  }
+}
+
+envelopes = {}
+envelopes["Brute"] = {infi = "697f18", bag = "0f374f", state = 2, life = 10}
+envelopes["Scoundrel"] = {infi = "66309d", bag = "90dd43", state = 5, life = 8}
+envelopes["Spellweaver"] = {infi = "0507cf", bag = "5d3782", state = 6, life = 6}
+envelopes["Mindthief"] = {infi = "8c1ca4", bag = "ca026b", state = 4, life = 6}
+envelopes["Cragheart"] = {infi = "ec1d2a", bag = "2ae7c4", state = 3, life = 10}
+envelopes["Tinkerer"] = {infi = "fdef02", bag = "bdf901", state = 7, life = 8}
+envelopes["Sawbones"] = {infi = "e5148c", bag = "87cff4", state = nil, life = 8}
+envelopes["Nightshroud"] = {infi = "8f7455", bag = "00c081", state = nil, life = 8}
+envelopes["Summoner"] = {infi = "0f9847", bag = "170ffc", state = nil, life = 8}
+envelopes["Beast Tyrant"] = {infi = "89bec7", bag = "21a9a6", state = nil, life = 6}
+envelopes["Sunkeeper"] = {infi = "bfe08d", bag = "5d0830", state = nil, life = 10}
+envelopes["Doomstalker"] = {infi = "b7fe6d", bag = "06b993", state = nil, life = 8}
+envelopes["Berserker"] = {infi = "7ff6c4", bag = "85c93e", state = nil, life = 10}
+envelopes["Elementalist"] = {infi = "21d7e7", bag = "3656de", state = nil, life = 6}
+envelopes["Soothsinger"] = {infi = "732351", bag = "0f374f", state = nil, life = 6}
+envelopes["Quartermaster"] = {infi = "d221fc", bag = "7b4f93", state = nil, life = 10}
+envelopes["Plagueherald"] = {infi = "10b86a", bag = "52a1ae", state = nil, life = 6}

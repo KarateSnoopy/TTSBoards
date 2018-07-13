@@ -1,0 +1,61 @@
+hideBack = false
+
+Buttons = {count = 0}
+Pros = {}
+
+function onload(save_state)
+  if save_state ~= "" then
+    Pros = JSON.decode(save_state)
+  end
+  setupProsperity()
+end
+
+function onSave()
+  self.script_state = JSON.encode(Pros)
+end
+
+function setupProsperity()
+  local x = -2.02
+  local z = -0.035
+  for i=0,4 do
+    for j=0,17 do
+      createProsperity((i*18) + (j), x + j * 0.238, z + i * 0.265)
+      Buttons.count = Buttons.count + 1
+      if Pros[tostring((i*18) + (j))] == true then
+        clickedPros((i*18) + (j))
+      else
+        Pros[tostring((i*18) + (j))] = false
+      end
+    end
+  end
+
+end
+
+function createProsperity(num, x, z)
+  self.setVar("ProsClick_" .. num, function () clickedPros(num) end)
+  local button_parameters = {}
+  button_parameters.function_owner = self
+  button_parameters.label = ""
+  button_parameters.height = 100
+  button_parameters.width = 200
+  button_parameters.font_size = 200
+  button_parameters.scale = {0.4, 0.1, 0.5}
+  button_parameters.color = {0, 0, 0, 0}
+  button_parameters.font_color = {0,0,0,255}
+  button_parameters.index = num
+  button_parameters.click_function = "ProsClick_" .. num
+  button_parameters.position = {x, 0.07, z}
+  self.createButton(button_parameters)
+  Buttons[num] = button_parameters
+end
+
+function clickedPros(index)
+  if Buttons[index].label == "" then
+    Buttons[index].label = "\u{2717}"
+    Pros[tostring(tonumber(index))] = true
+  else
+    Buttons[index].label = ""
+    Pros[tostring(tonumber(index))] = false
+  end
+  self.editButton(Buttons[index])
+end

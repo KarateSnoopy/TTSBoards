@@ -1,0 +1,15 @@
+function onCollisionEnter(info)
+
+  if info.collision_object.getName():find('Player Mat') then
+    local pos = info.collision_object.getPosition()
+    local bagPos = {pos.x, pos.y + 1, pos.z}
+    local envelopes = Global.getTable("envelopes")
+    local name = self.getName():sub(1,self.getName():len()-6)
+    local bag = getObjectFromGUID(envelopes[name].infi).takeObject({
+      position = bagPos,
+      rotation = {0.00, 180.00, 0.00},
+      smooth = false
+    })
+    bag.putObject(self)
+  end
+end
