@@ -5,6 +5,7 @@ setup = {
 }
 
 tableInilist = {}
+isRoundStarted = false
 
 function onLoad()
   megaFreeze() -- Make objects non-interactive
@@ -54,6 +55,12 @@ function mark(player, value, id)
 end
 
 function reveal()
+	if isRoundStarted then
+		broadcastToAll("Click End Round first.", {1, 1, 1})
+		return
+	end
+	isRoundStarted = true
+
   local playArea = nil
   local colors = {"Red", "White", "Blue", "Green"}
   local hitlist = Physics.cast({
@@ -106,6 +113,7 @@ function reveal()
             end
             if alive then
               broadcastToAll(class .. " has no Initiative!", {1, 0, 0})
+			  isRoundStarted = false
               return
             end
           end
@@ -140,6 +148,7 @@ function reveal()
 end
 
 function endRound()
+  isRoundStarted = false
   local playArea
   local hitlist = Physics.cast({
     origin = {0.00, 1.73, - 16.67},
