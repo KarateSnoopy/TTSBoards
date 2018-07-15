@@ -43571,8 +43571,8 @@ function spawnScenarioPages(params)
 		i.callback_owner	= self
 		i.params			= {lock = true}
 
-		--spawnObject(i).setCustomObject(i)
-		--position.x = position.x + 10.5
+		spawnObject(i).setCustomObject(i)
+		position.x = position.x + 10.5
 	end
 end
 

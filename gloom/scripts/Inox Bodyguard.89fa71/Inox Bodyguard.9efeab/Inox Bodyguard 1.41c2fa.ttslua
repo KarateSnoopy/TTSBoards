@@ -8,25 +8,39 @@ health = {
 statsObj = "6c1b20"
 
 function onLoad(save_state)
-
   if save_state ~= "" and self.getDescription() ~= "" then
     saved_data = JSON.decode(save_state)
     if saved_data.statNames then statNames = saved_data.statNames end
     if saved_data.health then
       health = saved_data.health
-      setHealth()
+      Wait.condition(setHealth, checkLoaded)
     end
   else
-    setTyp({"normal"})
+    Wait.condition(function() setTyp({"normal"}) end, checkLoaded)
   end
+  Wait.condition(checkStats, checkLoaded)
+  createBtns()
+end
 
+function checkLoaded()
+  if not self.loading_custom and not self.spawning then
+    return true
+  end
+  return false
+end
+
+function checkStats()
   for i,j in pairs(statNames) do
     if j == true then
       self.UI.setAttribute(i, "active", true)
-      self.UI.setAttribute("statePanel", "width", 300 + (getStatsCount()-1)*350)
     end
   end
-  createBtns()
+  Wait.frames(function() self.UI.setAttribute("statePanel", "width", 300 + (getStatsCount()-1)*350) end, 1)
+  local num = self.getName():match("%d+")
+  if num ~= nil then
+    -- Wait.frames(function() self.UI.setAttribute("number", "image", num) end, 1)
+    self.UI.setAttribute("number", "image", num)
+  end
 end
 
 function onSave()
@@ -87,7 +101,7 @@ function onCollisionEnter(a)
     statNames[newState] = true
     a.collision_object.destruct()
     self.UI.setAttribute(newState, "active", true)
-    self.UI.setAttribute("statePanel", "width", 260 + (getStatsCount()-1)*265)
+    Wait.frames(function() self.UI.setAttribute("statePanel", "width", 260 + (getStatsCount()-1)*265) end, 1)
   end
 end
 
@@ -125,13 +139,7 @@ function setTyp(typ)
     local level = tonumber(partySheet.UI.getAttribute("scenarioLevel", "text"))
     health.max = getObjectFromGUID(statsObj).getTable("stats")[getNameWoNumber()][level+1][typ[1]].health
     health.value = health.max
-    Timer.destroy(self.getGUID() .. "setHealth")
-    Timer.create({
-      identifier     = self.getGUID() .. "setHealth",
-      function_name  = "setHealth",
-      function_owner = self,
-      delay          = 1
-    })
+    setHealth()
   end
 end
 

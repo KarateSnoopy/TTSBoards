@@ -61,7 +61,7 @@ function addSub(param)
 end
 
 function editLevel()
-  self.UI.setAttribute("scenarioLevel", "text", math.ceil(tonumber(self.UI.getAttribute("averageLevel", "text"))/2)  + self.UI.getAttribute("difficulty", "value"))
+  Wait.frames(function() self.UI.setAttribute("scenarioLevel", "text", math.ceil(tonumber(self.UI.getAttribute("averageLevel", "text"))/2)  + self.UI.getAttribute("difficulty", "value")) end, 1)
 end
 
 function getPlayerCount()
