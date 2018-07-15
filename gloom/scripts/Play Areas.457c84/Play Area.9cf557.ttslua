@@ -233,22 +233,41 @@ function buttonClicked(clicked, broadcast, player_clicker_color)
         return
       elseif v.hit_object.getStates() ~= nil then
         if #v.hit_object.getStates() == 30 then
-          local newObj = nil
-          if v.hit_object.getStateId() == 31 then
-            if element == "P" then
-              newObj = v.hit_object.setState(1)
-            end
-          elseif v.hit_object.getStateId() == 1 then
-            if element == "M" then
-              newObj = v.hit_object.setState(31)
-            else
-              newObj = v.hit_object.setState(v.hit_object.getStateId() + (element == "P" and 1 or -1))
-            end
-          else
-            newObj = v.hit_object.setState(v.hit_object.getStateId() + (element == "P" and 1 or -1))
-          end
+			local counterGuid = nil
+			if pre == "P2E" then
+				counterGuid = "640d60"
+			else
+				counterGuid = "5e09bd"
+			end
 
-          broadcastToAll(Player[player_clicker_color].steam_name .. broadcast .. ". From: " .. v.hit_object.getName() .. " To: " .. newObj.getName(), colorsToTable[player_clicker_color])
+			if pre == "P2E" or pre == "P3E" then
+				local counter = getObjectFromGUID(counterGuid)
+				local oldValue = counter.Counter.getValue();
+				if element == "P" then
+					counter.Counter.increment()
+				else
+					counter.Counter.decrement()
+				end
+				local newValue = counter.Counter.getValue();
+				broadcastToAll(Player[player_clicker_color].steam_name .. broadcast .. ". From: " .. oldValue .. " To: " .. newValue, {1,1,1})
+			else
+				local newObj = nil
+	            if v.hit_object.getStateId() == 31 then
+	              if element == "P" then
+	                newObj = v.hit_object.setState(1)
+	              end
+	            elseif v.hit_object.getStateId() == 1 then
+	              if element == "M" then
+	                newObj = v.hit_object.setState(31)
+	              else
+	                newObj = v.hit_object.setState(v.hit_object.getStateId() + (element == "P" and 1 or -1))
+	              end
+	            else
+	              newObj = v.hit_object.setState(v.hit_object.getStateId() + (element == "P" and 1 or -1))
+	            end
+
+	            broadcastToAll(Player[player_clicker_color].steam_name .. broadcast .. ". From: " .. v.hit_object.getName() .. " To: " .. newObj.getName(), {1,1,1})
+			end
           return
         end
       elseif clicked:sub(1,1) == "P" and v.hit_object.tag == "Card"  then
