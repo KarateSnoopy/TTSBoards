@@ -352,7 +352,7 @@ function longRest(player, value, id)
     color = id
   end
 	local class = getClassFromColor(color)
-	broadcastToAll(class .. " take a Long Rest.", colorToPlayer[color].color)
+	broadcastToAll(class .. " take a Long Rest.", {1, 1, 1})
   table.insert(tableInilist, {99, 99, class})
 end
 

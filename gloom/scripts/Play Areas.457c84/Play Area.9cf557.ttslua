@@ -216,11 +216,11 @@ function buttonClicked(clicked, broadcast, player_clicker_color)
     for u, v in pairs(hitlist) do
       if pre == "Cre" and v.hit_object.getName() == element then
         v.hit_object.setPosition(elements[element].strong)
-        broadcastToAll(Player[player_clicker_color].steam_name .. broadcast .. element, colorsToTable[player_clicker_color])
+        broadcastToAll(Player[player_clicker_color].steam_name .. broadcast .. element, {1, 1, 1})
         return
       elseif pre == "Con" and v.hit_object.getName() == element then
         v.hit_object.setPosition(elements[element].inert)
-        broadcastToAll(Player[player_clicker_color].steam_name .. broadcast .. element, colorsToTable[player_clicker_color])
+        broadcastToAll(Player[player_clicker_color].steam_name .. broadcast .. element, {1, 1, 1})
         return
       elseif pre == "low" and v.hit_object.getName() == element then
         if v.hit_object.getPosition().x > 1 then
@@ -308,7 +308,7 @@ function buttonClicked(clicked, broadcast, player_clicker_color)
       end
     end
     if pre == "Con" then
-      broadcastToAll("No " .. element .. " to consume!", colorsToTable[player_clicker_color])
+      broadcastToAll("No " .. element .. " to consume!", {1, 1, 1})
     end
   end
 
